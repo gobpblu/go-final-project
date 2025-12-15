@@ -11,6 +11,7 @@ import (
 const (
 	portKey = "TODO_PORT"
 	webDir  = "web"
+	indexPath   = "./web/index.html"
 )
 
 func main() {
@@ -22,7 +23,11 @@ func main() {
 	}
 
 	fileServer := http.FileServer(http.Dir(webDir))
-	r.Handle("/", fileServer)
+
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, indexPath)
+	})
+	r.Handle("/*", fileServer)
 
 	fmt.Println("Сервер запущен на http://localhost:" + port)
 	if err := http.ListenAndServe(":"+port, r); err != nil {
