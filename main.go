@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"go-final-project/pkg/db"
+	"log"
 	"net/http"
 	"os"
 
@@ -9,9 +11,10 @@ import (
 )
 
 const (
-	portKey = "TODO_PORT"
-	webDir  = "web"
-	indexPath   = "./web/index.html"
+	portKey   = "TODO_PORT"
+	dbKey     = "TODO_DBFILE"
+	webDir    = "web"
+	indexPath = "./web/index.html"
 )
 
 func main() {
@@ -20,6 +23,17 @@ func main() {
 	port := os.Getenv(portKey)
 	if port == "" {
 		port = "7540"
+	}
+
+	dbFile := os.Getenv(dbKey)
+	if dbFile == "" {
+		dbFile = "scheduler.db"
+	}
+
+	err := db.Init(dbFile)
+	if err != nil {
+		log.Fatalf("Ошибка при открытии БД: %s", err.Error())
+		return
 	}
 
 	fileServer := http.FileServer(http.Dir(webDir))
