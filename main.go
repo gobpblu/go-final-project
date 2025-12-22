@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"go-final-project/pkg/db"
+	"go-final-project/pkg/server"
 	"log"
 	"net/http"
 	"os"
@@ -11,10 +12,8 @@ import (
 )
 
 const (
-	portKey   = "TODO_PORT"
-	dbKey     = "TODO_DBFILE"
-	webDir    = "web"
-	indexPath = "./web/index.html"
+	portKey = "TODO_PORT"
+	dbKey   = "TODO_DBFILE"
 )
 
 func main() {
@@ -36,12 +35,7 @@ func main() {
 		return
 	}
 
-	fileServer := http.FileServer(http.Dir(webDir))
-
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, indexPath)
-	})
-	r.Handle("/*", fileServer)
+	server.Run(r)
 
 	fmt.Println("Сервер запущен на http://localhost:" + port)
 	if err := http.ListenAndServe(":"+port, r); err != nil {
