@@ -13,11 +13,11 @@ var (
 	RepeatNotSpecifiedErr = errors.New("не указано правило повторения")
 	IncorrectFormatErr    = errors.New("формат не поддерживается или указан неправильно")
 	InvalidDaysCountErr   = errors.New("количество дней должно быть от 0 до 400")
-	InvalidDateParamErr   = errors.New("некорректно указан параметр date")
+	InvalidDateParamErr   = errors.New("некорректный формат даты")
 )
 
 const (
-	dateLayout = "20060102"
+	DateLayout = "20060102"
 )
 
 func NextDateHandler(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +27,7 @@ func NextDateHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	if len(nowQuery) != 0 {
-		now, err = time.Parse(dateLayout, nowQuery)
+		now, err = time.Parse(DateLayout, nowQuery)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			return
@@ -48,7 +48,7 @@ func NextDate(now time.Time, dstart string, repeat string) (string, error) {
 		return "", RepeatNotSpecifiedErr
 	}
 
-	startDate, err := time.Parse(dateLayout, dstart)
+	startDate, err := time.Parse(DateLayout, dstart)
 	if err != nil {
 		return "", InvalidDateParamErr
 	}
@@ -87,7 +87,7 @@ func handleDaysShift(now time.Time, startDate time.Time, daysStr string) (string
 
 	for {
 		startDate = startDate.AddDate(0, 0, daysCount)
-		if afterNow(startDate, now) {
+		if AfterNow(startDate, now) {
 			break
 		}
 	}
@@ -99,7 +99,7 @@ func handleYearShift(now time.Time, startDate time.Time) (string, error) {
 
 	for {
 		startDate = startDate.AddDate(1, 0, 0)
-		if afterNow(startDate, now) {
+		if AfterNow(startDate, now) {
 			break
 		}
 	}
@@ -162,8 +162,8 @@ func handleMonthShift(now time.Time, startDate time.Time, repeatArray []string) 
 	return formatDate(startDate), nil
 }
 
-func afterNow(date, now time.Time) bool {
-	return date.Format(dateLayout) > now.Format(dateLayout)
+func AfterNow(date, now time.Time) bool {
+	return date.Format(DateLayout) > now.Format(DateLayout)
 }
 
 func isSameWeekday(date time.Time, weekdays []int) bool {
@@ -279,5 +279,5 @@ func isPreLastDay(t time.Time) bool {
 }
 
 func formatDate(t time.Time) string {
-	return t.Format(dateLayout)
+	return t.Format(DateLayout)
 }
