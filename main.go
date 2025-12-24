@@ -4,30 +4,25 @@ import (
 	"fmt"
 	"go-final-project/pkg/db"
 	"go-final-project/pkg/server"
+	"go-final-project/pkg/utils"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/go-chi/chi/v5"
 )
 
 const (
-	portKey = "TODO_PORT"
-	dbKey   = "TODO_DBFILE"
+	portKey       = "TODO_PORT"
+	dbKey         = "TODO_DBFILE"
+	defaultPort   = "7540"
+	defaultDbName = "scheduler.db"
 )
 
 func main() {
 	r := chi.NewRouter()
 
-	port := os.Getenv(portKey)
-	if port == "" {
-		port = "7540"
-	}
-
-	dbFile := os.Getenv(dbKey)
-	if dbFile == "" {
-		dbFile = "scheduler.db"
-	}
+	port := utils.GetEnvOrDefault(portKey, defaultPort)
+	dbFile := utils.GetEnvOrDefault(dbKey, defaultDbName)
 
 	err := db.Init(dbFile)
 	if err != nil {

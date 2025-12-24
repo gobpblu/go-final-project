@@ -163,7 +163,7 @@ func handleMonthShift(now time.Time, startDate time.Time, repeatArray []string) 
 }
 
 func afterNow(date, now time.Time) bool {
-	return date.After(now)
+	return date.Format(dateLayout) > now.Format(dateLayout)
 }
 
 func isSameWeekday(date time.Time, weekdays []int) bool {
