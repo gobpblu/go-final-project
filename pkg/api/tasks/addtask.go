@@ -11,6 +11,10 @@ import (
 	"time"
 )
 
+type AddTaskResp struct {
+	id int64
+}
+
 func AddTaskHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
 		Title   string `json:"title"`
@@ -49,8 +53,7 @@ func AddTaskHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := utils.JsonData{"id": id}
-	utils.WriteJSON(w, http.StatusOK, data, nil)
+	utils.WriteJSON(w, http.StatusOK, AddTaskResp{id: id}, nil)
 }
 
 func validateTask(task *db.Task) error {

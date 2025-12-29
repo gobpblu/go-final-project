@@ -2,6 +2,12 @@ package db
 
 import (
 	"database/sql"
+	"go-final-project/pkg/api/nextdate"
+	"time"
+)
+
+const (
+	dateFormat = "02.01.2006"
 )
 
 type Task struct {
@@ -27,4 +33,51 @@ func AddTask(task *Task) (int64, error) {
 		id, err = res.LastInsertId()
 	}
 	return id, err
+}
+
+func Tasks(limit int, search string) ([]*Task, error) {
+	var tasks []*Task
+	var rows *sql.Rows
+
+	parsedDate, err := time.Parse(dateFormat, search)
+
+	if err == nil {
+		date := parsedDate.Format(nextdate.DateLayout)
+		rows, err = db.Query(
+			"SELECT * FROM scheduler WHERE date = :date LIMIT :limit ",
+			sql.Named("date", date),
+			sql.Named("limit", limit),
+		)
+	} else if len(search) != 0 {
+		searchParam := "%" + search + "%"
+		rows, err = db.Query(
+			"SELECT * FROM scheduler WHERE title LIKE :search OR comment LIKE :search ORDER BY date LIMIT :limit",
+			sql.Named("search", searchParam),
+			sql.Named("limit", limit),
+		)
+	} else {
+		rows, err = db.Query("SELECT * FROM scheduler ORDER BY date LIMIT :limit", sql.Named("limit", limit))
+	}
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var task Task
+
+		err := rows.Scan(&task.ID, &task.Date, &task.Title, &task.Comment, &task.Repeat)
+		if err != nil {
+			return nil, err
+		}
+
+		tasks = append(tasks, &task)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return tasks, nil
 }

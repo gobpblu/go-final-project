@@ -8,7 +8,7 @@ import (
 
 type JsonData map[string]any
 
-func WriteJSON(w http.ResponseWriter, status int, data JsonData, headers http.Header) error {
+func WriteJSON(w http.ResponseWriter, status int, data any, headers http.Header) error {
 	js, err := json.MarshalIndent(data, "", "\t")
 	if err != nil {
 		return err
