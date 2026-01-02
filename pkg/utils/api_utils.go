@@ -27,6 +27,10 @@ func WriteJSON(w http.ResponseWriter, status int, data any, headers http.Header)
 	return nil
 }
 
+func WriteBadRequestErrorWithMessage(w http.ResponseWriter, message string) {
+	writeErrorResponse(w, http.StatusBadRequest, message)
+}
+
 func WriteBadRequestError(w http.ResponseWriter) {
 	writeErrorResponse(w, http.StatusBadRequest, "неправильно указано тело запроса")
 }
@@ -37,6 +41,10 @@ func WriteFailedValidationError(w http.ResponseWriter, err error) {
 
 func WriteInternalServerError(w http.ResponseWriter) {
 	writeErrorResponse(w, http.StatusInternalServerError, "что-то пошло не так")
+}
+
+func WritePageNotFoundError(w http.ResponseWriter, message string) {
+	writeErrorResponse(w, http.StatusNotFound, message)
 }
 
 func writeErrorResponse(w http.ResponseWriter, status int, message any) {

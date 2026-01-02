@@ -2,8 +2,13 @@ package db
 
 import (
 	"database/sql"
+	"errors"
 	"go-final-project/pkg/api/nextdate"
 	"time"
+)
+
+var (
+	IncorrectIDErr = errors.New("неправильно указан идентификатор")
 )
 
 const (
@@ -20,7 +25,7 @@ type Task struct {
 
 func AddTask(task *Task) (int64, error) {
 	var id int64
-	// определите запрос
+
 	query := `INSERT INTO scheduler (date, title, comment, repeat) VALUES (:date, :title, :comment, :repeat)`
 	res, err := db.Exec(
 		query,
@@ -80,4 +85,34 @@ func Tasks(limit int, search string) ([]*Task, error) {
 	}
 
 	return tasks, nil
+}
+
+func GetTask(id string) (*Task, error) {
+	task := &Task{}
+
+	row := db.QueryRow("SELECT id, date, title, comment, repeat FROM scheduler WHERE id = :id", sql.Named("id", id))
+	err := row.Scan(&task.ID, &task.Date, &task.Title, &task.Comment, &task.Repeat)
+
+	return task, err
+}
+
+func UpdateTask(task *Task) error {
+	query := `UPDATE scheduler SET date = :date, title = :title, comment = :comment, repeat = :repeat WHERE id = :id`
+	res, err := db.Exec(
+		query,
+		sql.Named("date", task.Date),
+		sql.Named("title", task.Title),
+		sql.Named("comment", task.Comment),
+		sql.Named("repeat", task.Repeat),
+		sql.Named("id", task.ID),
+	)
+
+	count, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if count == 0 {
+		return IncorrectIDErr
+	}
+	return nil
 }

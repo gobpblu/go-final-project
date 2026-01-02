@@ -53,7 +53,54 @@ func AddTaskHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, http.StatusOK, AddTaskResp{id: id}, nil)
+	utils.WriteJSON(w, http.StatusOK, utils.JsonData{"id": id}, nil)
+}
+
+func UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
+	var input struct {
+		ID      string `json:"id"`
+		Title   string `json:"title"`
+		Date    string `json:"date"`
+		Comment string `json:"comment"`
+		Repeat  string `json:"repeat"`
+	}
+	var buf bytes.Buffer
+	_, err := buf.ReadFrom(r.Body)
+	if err != nil {
+		utils.WriteBadRequestError(w)
+		return
+	}
+
+	if err = json.Unmarshal(buf.Bytes(), &input); err != nil {
+		utils.WriteBadRequestError(w)
+		return
+	}
+
+	task := &db.Task{
+		ID:      input.ID,
+		Title:   input.Title,
+		Date:    input.Date,
+		Comment: input.Comment,
+		Repeat:  input.Repeat,
+	}
+
+	err = validateTask(task)
+	if err != nil {
+		utils.WriteFailedValidationError(w, err)
+		return
+	}
+
+	err = db.UpdateTask(task)
+	if err != nil {
+		if errors.Is(err, db.IncorrectIDErr) {
+			utils.WriteBadRequestErrorWithMessage(w, err.Error())
+			return
+		}
+		utils.WriteInternalServerError(w)
+		return
+	}
+
+	utils.WriteJSON(w, http.StatusOK, utils.JsonData{}, nil)
 }
 
 func validateTask(task *db.Task) error {
