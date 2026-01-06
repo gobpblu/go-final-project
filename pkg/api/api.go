@@ -13,4 +13,6 @@ func Init(r *chi.Mux) {
 	r.Get("/api/tasks", tasks.GetTasksHandler)
 	r.Get("/api/task", tasks.GetTaskHandler)
 	r.Put("/api/task", tasks.UpdateTaskHandler)
+	r.Post("/api/task/done", tasks.TaskDoneHandler)
+	r.Delete("/api/task", tasks.DeleteTaskHandler)
 }

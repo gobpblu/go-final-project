@@ -2,7 +2,7 @@ package nextdate
 
 import (
 	"errors"
-	"fmt"
+	"go-final-project/pkg/utils"
 	"net/http"
 	"strconv"
 	"strings"
@@ -36,8 +36,8 @@ func NextDateHandler(w http.ResponseWriter, r *http.Request) {
 
 	nextDate, err := NextDate(now, query.Get("date"), query.Get("repeat"))
 	if err != nil {
-		fmt.Fprintf(w, "ERROR: %s", err.Error())
-		w.WriteHeader(http.StatusBadRequest)
+		utils.WriteBadRequestError(w)
+		return
 	}
 	w.Write([]byte(nextDate))
 	w.WriteHeader(http.StatusOK)
