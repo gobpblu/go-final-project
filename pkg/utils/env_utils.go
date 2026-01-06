@@ -2,12 +2,12 @@ package utils
 
 import "os"
 
-func GetEnvOrDefault(key, defaultValue string) (string) {
+func GetEnvOrDefault(key, defaultValue string) string {
 	value := os.Getenv(key)
 
 	if value == "" {
-		value = "7540"
+		value = defaultValue
 	}
-	
+
 	return value
 }

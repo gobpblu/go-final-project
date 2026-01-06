@@ -47,6 +47,10 @@ func WritePageNotFoundError(w http.ResponseWriter, message string) {
 	writeErrorResponse(w, http.StatusNotFound, message)
 }
 
+func WriteAuthenticationRequiredError(w http.ResponseWriter) {
+	writeErrorResponse(w, http.StatusUnauthorized, "Требуется аутентификация")
+}
+
 func writeErrorResponse(w http.ResponseWriter, status int, message any) {
 	env := JsonData{"error": message}
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"go-final-project/pkg/constants"
 	"go-final-project/pkg/db"
 	"go-final-project/pkg/server"
 	"go-final-project/pkg/utils"
@@ -9,22 +10,22 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-)
-
-const (
-	portKey       = "TODO_PORT"
-	dbKey         = "TODO_DBFILE"
-	defaultPort   = "7540"
-	defaultDbName = "scheduler.db"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	// Загружаем переменные из .env
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Ошибка загрузки .env файла")
+	}
+
 	r := chi.NewRouter()
 
-	port := utils.GetEnvOrDefault(portKey, defaultPort)
-	dbFile := utils.GetEnvOrDefault(dbKey, defaultDbName)
+	port := utils.GetEnvOrDefault(constants.PortKey, constants.DefaultPort)
+	dbFile := utils.GetEnvOrDefault(constants.DbKey, constants.DefaultDbName)
 
-	err := db.Init(dbFile)
+	err = db.Init(dbFile)
 	if err != nil {
 		log.Fatalf("Ошибка при открытии БД: %s", err.Error())
 		return
