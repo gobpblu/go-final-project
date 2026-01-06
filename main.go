@@ -17,7 +17,7 @@ func main() {
 	// Загружаем переменные из .env
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Ошибка загрузки .env файла")
+		log.Println("Ошибка загрузки .env файла")
 	}
 
 	r := chi.NewRouter()
