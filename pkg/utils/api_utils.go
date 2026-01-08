@@ -1,0 +1,65 @@
+package utils
+
+import (
+	"encoding/json"
+	"log"
+	"net/http"
+)
+
+type JsonData map[string]any
+
+func WriteJSON(w http.ResponseWriter, status int, data any, headers http.Header) error {
+	js, err := json.MarshalIndent(data, "", "\t")
+	if err != nil {
+		return err
+	}
+
+	js = append(js, '\n')
+
+	for key, value := range headers {
+		w.Header()[key] = value
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	_, err = w.Write(js)
+	if err != nil {
+		log.Println("Error while writing JSON: ", err.Error())
+	}
+
+	return err
+}
+
+func WriteBadRequestErrorWithMessage(w http.ResponseWriter, message string) {
+	writeErrorResponse(w, http.StatusBadRequest, message)
+}
+
+func WriteBadRequestError(w http.ResponseWriter) {
+	writeErrorResponse(w, http.StatusBadRequest, "неправильно указано тело запроса")
+}
+
+func WriteFailedValidationError(w http.ResponseWriter, err error) {
+	writeErrorResponse(w, http.StatusUnprocessableEntity, err.Error())
+}
+
+func WriteInternalServerError(w http.ResponseWriter) {
+	writeErrorResponse(w, http.StatusInternalServerError, "что-то пошло не так")
+}
+
+func WritePageNotFoundError(w http.ResponseWriter, message string) {
+	writeErrorResponse(w, http.StatusNotFound, message)
+}
+
+func WriteAuthenticationRequiredError(w http.ResponseWriter) {
+	writeErrorResponse(w, http.StatusUnauthorized, "Требуется аутентификация")
+}
+
+func writeErrorResponse(w http.ResponseWriter, status int, message any) {
+	env := JsonData{"error": message}
+
+	err := WriteJSON(w, status, env, nil)
+	if err != nil {
+		log.Fatal(err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+}
