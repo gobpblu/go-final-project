@@ -22,9 +22,12 @@ func WriteJSON(w http.ResponseWriter, status int, data any, headers http.Header)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	w.Write(js)
+	_, err = w.Write(js)
+	if err != nil {
+		log.Println("Error while writing JSON: ", err.Error())
+	}
 
-	return nil
+	return err
 }
 
 func WriteBadRequestErrorWithMessage(w http.ResponseWriter, message string) {

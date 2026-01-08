@@ -1,10 +1,10 @@
 package tasks
 
 import (
-	"fmt"
+	"net/http"
+
 	"go-final-project/pkg/db"
 	"go-final-project/pkg/utils"
-	"net/http"
 )
 
 func DeleteTaskHandler(w http.ResponseWriter, r *http.Request) {
@@ -15,11 +15,8 @@ func DeleteTaskHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("ID: ", taskId)
-
 	err := db.DeleteTask(taskId)
 	if err != nil {
-		fmt.Println("ERR: ", err)
 		utils.WriteInternalServerError(w)
 		return
 	} else {

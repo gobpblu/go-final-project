@@ -3,8 +3,9 @@ package db
 import (
 	"database/sql"
 	"errors"
-	"go-final-project/pkg/api/nextdate"
 	"time"
+
+	"go-final-project/pkg/api/nextdate"
 )
 
 var (
@@ -49,19 +50,19 @@ func Tasks(limit int, search string) ([]*Task, error) {
 	if err == nil {
 		date := parsedDate.Format(nextdate.DateLayout)
 		rows, err = db.Query(
-			"SELECT * FROM scheduler WHERE date = :date LIMIT :limit ",
+			"SELECT id, date, title, comment, repeat FROM scheduler WHERE date = :date LIMIT :limit ",
 			sql.Named("date", date),
 			sql.Named("limit", limit),
 		)
 	} else if len(search) != 0 {
 		searchParam := "%" + search + "%"
 		rows, err = db.Query(
-			"SELECT * FROM scheduler WHERE title LIKE :search OR comment LIKE :search ORDER BY date LIMIT :limit",
+			"SELECT id, date, title, comment, repeat FROM scheduler WHERE title LIKE :search OR comment LIKE :search ORDER BY date LIMIT :limit",
 			sql.Named("search", searchParam),
 			sql.Named("limit", limit),
 		)
 	} else {
-		rows, err = db.Query("SELECT * FROM scheduler ORDER BY date LIMIT :limit", sql.Named("limit", limit))
+		rows, err = db.Query("SELECT id, date, title, comment, repeat FROM scheduler ORDER BY date LIMIT :limit", sql.Named("limit", limit))
 	}
 
 	if err != nil {
@@ -90,7 +91,7 @@ func Tasks(limit int, search string) ([]*Task, error) {
 func GetTask(id string) (*Task, error) {
 	task := &Task{}
 
-	row := db.QueryRow("SELECT * FROM scheduler WHERE id = :id", sql.Named("id", id))
+	row := db.QueryRow("SELECT id, date, title, comment, repeat FROM scheduler WHERE id = :id", sql.Named("id", id))
 	err := row.Scan(&task.ID, &task.Date, &task.Title, &task.Comment, &task.Repeat)
 
 	return task, err

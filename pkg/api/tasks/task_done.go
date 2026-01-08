@@ -3,11 +3,12 @@ package tasks
 import (
 	"database/sql"
 	"errors"
+	"net/http"
+	"time"
+
 	"go-final-project/pkg/api/nextdate"
 	"go-final-project/pkg/db"
 	"go-final-project/pkg/utils"
-	"net/http"
-	"time"
 )
 
 func TaskDoneHandler(w http.ResponseWriter, r *http.Request) {

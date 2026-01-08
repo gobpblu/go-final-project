@@ -2,11 +2,12 @@ package nextdate
 
 import (
 	"errors"
-	"go-final-project/pkg/utils"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"go-final-project/pkg/utils"
 )
 
 var (

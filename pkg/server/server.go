@@ -1,8 +1,9 @@
 package server
 
 import (
-	"go-final-project/pkg/api"
 	"net/http"
+
+	"go-final-project/pkg/api"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -12,7 +13,7 @@ const (
 	indexPath = "./web/index.html"
 )
 
-func Run(r *chi.Mux) {
+func Run(r *chi.Mux, password string) {
 	fileServer := http.FileServer(http.Dir(webDir))
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
@@ -20,5 +21,5 @@ func Run(r *chi.Mux) {
 	})
 	r.Handle("/*", fileServer)
 
-	api.Init(r)
+	api.Init(r, password)
 }

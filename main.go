@@ -1,13 +1,13 @@
 package main
 
 import (
-	"fmt"
+	"log"
+	"net/http"
+
 	"go-final-project/pkg/constants"
 	"go-final-project/pkg/db"
 	"go-final-project/pkg/server"
 	"go-final-project/pkg/utils"
-	"log"
-	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
@@ -24,18 +24,20 @@ func main() {
 
 	port := utils.GetEnvOrDefault(constants.PortKey, constants.DefaultPort)
 	dbFile := utils.GetEnvOrDefault(constants.DbKey, constants.DefaultDbName)
+	password := utils.GetEnvOrDefault(constants.PasswordKey, "")
 
-	err = db.Init(dbFile)
+	err, database := db.Init(dbFile)
 	if err != nil {
 		log.Fatalf("Ошибка при открытии БД: %s", err.Error())
 		return
 	}
+	defer database.Close()
 
-	server.Run(r)
+	server.Run(r, password)
 
-	fmt.Println("Сервер запущен на http://localhost:" + port)
+	log.Println("Сервер запущен на http://localhost:" + port)
 	if err := http.ListenAndServe(":"+port, r); err != nil {
-		fmt.Printf("Ошибка при запуске сервера: %s", err.Error())
+		log.Printf("Ошибка при запуске сервера: %s", err.Error())
 		return
 	}
 }

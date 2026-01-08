@@ -3,9 +3,10 @@ package tasks
 import (
 	"database/sql"
 	"errors"
+	"net/http"
+
 	"go-final-project/pkg/db"
 	"go-final-project/pkg/utils"
-	"net/http"
 )
 
 func GetTaskHandler(w http.ResponseWriter, r *http.Request) {

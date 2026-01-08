@@ -13,7 +13,7 @@ const (
 
 var db *sql.DB
 
-func Init(dbFile string) error {
+func Init(dbFile string) (error, *sql.DB) {
 
 	_, err := os.Stat(dbFile)
 	var install bool
@@ -23,13 +23,13 @@ func Init(dbFile string) error {
 
 	db, err = sql.Open("sqlite", "scheduler.db")
 	if err != nil {
-		return err
+		return err, db
 	}
 
 	if install {
 		_, err = db.Exec(schema)
-		return err
+		return err, db
 	}
 
-	return nil
+	return nil, db
 }

@@ -9,12 +9,12 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func Init(r *chi.Mux) {
+func Init(r *chi.Mux, password string) {
 	r.Post("/api/signin", signin.SignInHandler)
 	r.Get("/api/nextdate", nextdate.NextDateHandler)
 
 	r.Route("/api/task", func(r chi.Router) {
-		r.Use(middlewares.Auth)
+		r.Use(middlewares.AuthMiddleware(password))
 
 		r.Post("/", tasks.AddTaskHandler)
 		r.Get("/", tasks.GetTaskHandler)
@@ -24,7 +24,7 @@ func Init(r *chi.Mux) {
 	})
 
 	r.Route("/api/tasks", func(r chi.Router) {
-		r.Use(middlewares.Auth)
+		r.Use(middlewares.AuthMiddleware(password))
 
 		r.Get("/", tasks.GetTasksHandler)
 	})
